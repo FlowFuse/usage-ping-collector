@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk')
-// const ddb = new AWS.DynamoDB({apiVersion: '2012-08-10'})
 const client = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 const crypto = require('crypto')
 const sha256 = value => crypto.createHash('sha256').update(value).digest().toString('base64')
@@ -44,6 +43,7 @@ exports.handler = async (event, context) => {
             }
 
             // instanceId: <instanceId>
+            // createdAt: <Date.ISOString>
             // ip: <hash of calling IP>
             // env:
             //    nodejs: `process.version`
@@ -52,6 +52,8 @@ exports.handler = async (event, context) => {
             //      type: `os.type()`
             //      release: `os.release()`
             //      arch:  `os.arch()`
+            // platform:
+            //    ...
             //
         }
     } catch(err) {
