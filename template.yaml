@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  PingDB:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: flowforge-ping-data
+      AttributeDefinitions:
+        - AttributeName: "instanceId"
+          AttributeType: "S"
+        - AttributeName: "createdAt"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "instanceId"
+          KeyType: "HASH"
+        - AttributeName: "createdAt"
+          KeyType: "RANGE"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  LambdaPingHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: app.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Events:
+        apiForLambda:
+          Type: HttpApi
+          Properties:
+            Path: /ping
+            Method: post
+      Policies:
+        DynamoDBWritePolicy:
+          TableName: !Ref PingDB
