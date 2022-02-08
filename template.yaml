@@ -1,6 +1,14 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  DomainName:
+    Type: String
+    Description: Domain name for api
+    Default: ping.flowforge.com
+  CertArn:
+    Type: String
+
 Resources:
   PingDB:
     Type: AWS::DynamoDB::Table
@@ -20,6 +28,13 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
+  HttpApiGateway: # Creates a HTTP API endpoint under the customm domain
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Domain:
+        DomainName: !Ref DomainName
+        CertificateArn: !Ref CertArn
+
   LambdaPingHandler:
     Type: AWS::Serverless::Function
     Properties:
@@ -31,8 +46,9 @@ Resources:
         apiForLambda:
           Type: HttpApi
           Properties:
-            Path: /ping
+            ApiId: !Ref HttpApiGateway
             Method: post
+            Path: /ping
       Policies:
         DynamoDBWritePolicy:
           TableName: !Ref PingDB
