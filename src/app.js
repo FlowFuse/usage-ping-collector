@@ -12,7 +12,10 @@ const optionalProperties = [
     'os.release',
     'os.arch',
     'env.nodejs',
-    'env.flowforge'
+    'env.flowforge',
+    'platform.counts.users',
+    'platform.counts.teams',
+    'platform.counts.projects'
 ]
 
 function getProperty(payload, key) {
