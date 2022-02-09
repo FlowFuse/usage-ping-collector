@@ -3,29 +3,80 @@ const client = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 const crypto = require('crypto')
 const sha256 = value => crypto.createHash('sha256').update(value).digest().toString('base64')
 
+const requiredProperties = [
+    'instanceId'
+]
+
+const optionalProperties = [
+    'os.type',
+    'os.release',
+    'os.arch',
+    'env.nodejs',
+    'env.flowforge'
+]
+
+function getProperty(payload, key) {
+    const keyParts = key.split('.')
+    let value = payload
+    const found = keyParts.every(part => {
+        if (value[part] === undefined) {
+            return false
+        }
+        value = value[part]
+        return true
+    })
+    if (!found) {
+        return undefined
+    } else {
+        return value
+    }
+}
+
+function setProperty(object, key, value) {
+    const keyParts = key.split('.')
+    let pointer = object
+    keyParts.forEach((part, index) => {
+        if (index < keyParts.length - 1) {
+            if (!pointer[part]) {
+                pointer[part] = {}
+            }
+            pointer = pointer[part]
+        } else {
+            pointer[part] = value
+        }
+    })
+}
 
 exports.handler = async (event, context) => {
     try {
         if (event.body) {
             const payload = JSON.parse(event.body)
+            const item =  {}
 
-            if (!payload.instanceId) {
-                throw new Error("Invalid request")
-            }
-
-            let callingIP = "unknown"
-            if (event.requestContext && event.requestContext.http)  {
-                callingIP =  sha256(event.requestContext.http.sourceIp)
-            }
-            const params = {
-                TableName:'flowforge-ping-data',
-                Item: {
-                    instanceId: payload.instanceId || "unknown",
-                    createdAt: (new Date()).toISOString(),
-                    ip: callingIP,
-                    env: payload.env,
-                    platform: payload.platform
+            requiredProperties.forEach(key => {
+                const value = getProperty(payload, key)
+                if (value !== undefined) {
+                    setProperty(item, key, value)
+                } else {
+                    throw new Error(`Missing required property: ${key}`)
                 }
+            })
+
+            item.createdAt = (new Date()).toISOString()
+            item.ip = (event.requestContext && event.requestContext.http)
+                ? sha256(event.requestContext.http.sourceIp)
+                : 'unknown'
+
+            optionalProperties.forEach(key => {
+                const value = getProperty(payload, key)
+                if (value !== undefined) {
+                    setProperty(item, key, value)
+                }
+            })
+
+            const params = {
+                TableName: 'flowforge-ping-data',
+                Item: item
             }
 
             var msg;
@@ -41,20 +92,6 @@ exports.handler = async (event, context) => {
                     status: msg
                 })
             }
-
-            // instanceId: <instanceId>
-            // createdAt: <Date.ISOString>
-            // ip: <hash of calling IP>
-            // env:
-            //    nodejs: `process.version`
-            //    flowforge: <version>
-            //    os:
-            //      type: `os.type()`
-            //      release: `os.release()`
-            //      arch:  `os.arch()`
-            // platform:
-            //    ...
-            //
         }
     } catch(err) {
         console.error(err)
