@@ -15,7 +15,8 @@ const optionalProperties = [
     'env.flowforge',
     'platform.counts.users',
     'platform.counts.teams',
-    'platform.counts.projects'
+    'platform.counts.projects',
+    'platform.config.driver'
 ]
 
 function getProperty(payload, key) {
