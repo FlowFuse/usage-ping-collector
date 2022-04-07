@@ -1,0 +1,8 @@
+name: Project automations
+on:
+  issues:
+    types:
+      - opened
+jobs:
+  add_to_product_board:
+    uses: flowforge/.github/.github/workflows/project-automation.yml@main
