@@ -16,6 +16,10 @@ const optionalProperties = [
     'platform.counts.users',
     'platform.counts.teams',
     'platform.counts.projects',
+    'platform.counts.devices',
+    'platform.counts.projectSnapshots',
+    'platform.counts.projectTemplates',
+    'platform.counts.projectStacks',
     'platform.config.driver'
 ]
 
