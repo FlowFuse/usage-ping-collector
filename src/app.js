@@ -55,6 +55,10 @@ function setProperty(object, key, value) {
     })
 }
 
+function padNum(v) {
+    return ((v < 10)?'0':'')+v
+}
+
 function getMondayOfWeek(date) {
     const deltaDays = (date.getDay()+6)%7
     const monday = new Date(date.getTime() - (deltaDays*1000*60*60*24))
