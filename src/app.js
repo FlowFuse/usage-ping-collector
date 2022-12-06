@@ -55,6 +55,12 @@ function setProperty(object, key, value) {
     })
 }
 
+function getMondayOfWeek(date) {
+    const deltaDays = (date.getDay()+6)%7
+    const monday = new Date(date.getTime() - (deltaDays*1000*60*60*24))
+    return `${monday.getFullYear()}-${padNum(monday.getMonth()+1)}-${padNum(monday.getDate())}`
+}
+
 exports.handler = async (event, context) => {
     try {
         if (event.body) {
@@ -69,8 +75,10 @@ exports.handler = async (event, context) => {
                     throw new Error(`Missing required property: ${key}`)
                 }
             })
-
-            item.createdAt = (new Date()).toISOString()
+            const createdAt = new Date()
+            item.createdAt = createdAt.toISOString()
+            item.weekStartDate = getMondayOfWeek(createdAt)
+            
             item.ip = (event.requestContext && event.requestContext.http)
                 ? sha256(event.requestContext.http.sourceIp)
                 : 'unknown'
