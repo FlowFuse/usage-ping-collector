@@ -20,7 +20,10 @@ const optionalProperties = [
     'platform.counts.projectSnapshots',
     'platform.counts.projectTemplates',
     'platform.counts.projectStacks',
-    'platform.config.driver'
+    'platform.config.driver',
+    'platform.config.broker.enabled',
+    'platform.config.fileStore.enabled',
+    'platform.config.email.enabled'
 ]
 
 function getProperty(payload, key) {
