@@ -1,8 +1,11 @@
-const AWS = require('aws-sdk')
-const client = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+const { Client } = require("pg");
 const crypto = require('crypto')
 const sha256 = value => crypto.createHash('sha256').update(value).digest().toString('base64')
 
+
+// NOTE: any changes to required/optional props will require the database table
+// to be updated first. DO NOT DEPLOY changes to these lists without having
+// updated the database otherwise pings will be dropped
 const requiredProperties = [
     'instanceId'
 ]
@@ -25,6 +28,25 @@ const optionalProperties = [
     'platform.config.fileStore.enabled',
     'platform.config.email.enabled'
 ]
+
+const dbColumns = [
+    'createdAt',
+    'ip',
+    'weekYear',
+    'weekStartDate',
+    'isDev',
+    ...requiredProperties,
+    ...optionalProperties
+]
+
+const columnList = `"${dbColumns.join('","')}"`
+const columnValues = dbColumns.map((v,index) => {
+    if (index === 0) {
+        return 'current_timestamp'
+    } else {
+        return '$'+index
+    }
+}).join(",")
 
 function getProperty(payload, key) {
     const keyParts = key.split('.')
@@ -69,6 +91,9 @@ function getMondayOfWeek(date) {
 }
 
 exports.handler = async (event, context) => {
+    const response = {
+        'statusCode': 200
+    }
     try {
         if (event.body) {
             const payload = JSON.parse(event.body)
@@ -94,31 +119,53 @@ exports.handler = async (event, context) => {
                 const value = getProperty(payload, key)
                 if (value !== undefined) {
                     setProperty(item, key, value)
+                    if (key === 'env.flowforge') {
+                        item.isDev = !!/git/.test(value)
+                    }
                 }
             })
 
-            const params = {
-                TableName: 'flowforge-ping-data',
-                Item: item
+            const dbConfig = {
+                host: process.env.PG_URL,
+                user: process.env.PG_USER,
+                password: process.env.PG_PW,
+                database: process.env.PG_DB,
             }
 
-            var msg;
-            try{
-                await client.put(params).promise();
-                msg = 'okay';
-            } catch(err){
-                msg = err;
-            }
-            var response = {
-                'statusCode': 200,
-                'body': JSON.stringify({
-                    status: msg
+            const client = new Client(dbConfig);
+
+            try {
+                await client.connect();
+
+                const values = dbColumns.slice(1).map(v => {
+                    const value = getProperty(item, v)
+                    if (value !== undefined) {
+                        return value
+                    }
+                    return null
                 })
+
+                const query = {
+                    text: `INSERT INTO pings(${columnList}) VALUES(${columnValues})`,
+                    values
+                }
+                   
+                // callback
+                await client.query(query)
+                response.body = JSON.stringify({ status: 'success' })
+                await client.end();
+            } catch (err) {
+                await client.end();
+                response.statusCode = 400
+                response.body = JSON.stringify({ status: 'error', error: err.toString() })
             }
+        } else {
+            response.statusCode = 400
+            response.body = JSON.stringify({ status: 'error', error: 'Missing request body' })
         }
     } catch(err) {
-        console.error(err)
-        return err
+        response.statusCode = 400
+        response.body = JSON.stringify({ status: 'error', error: err.toString() })
     }
 
     return response
