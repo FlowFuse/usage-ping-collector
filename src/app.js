@@ -30,7 +30,6 @@ const optionalProperties = [
 ]
 
 const dbColumns = [
-    'createdAt',
     'ip',
     'weekYear',
     'weekStartDate',
@@ -41,11 +40,7 @@ const dbColumns = [
 
 const columnList = `"${dbColumns.join('","')}"`
 const columnValues = dbColumns.map((v,index) => {
-    if (index === 0) {
-        return 'current_timestamp'
-    } else {
-        return '$'+index
-    }
+	return '$'+index
 }).join(",")
 
 function getProperty(payload, key) {
@@ -108,7 +103,6 @@ exports.handler = async (event, context) => {
                 }
             })
             const createdAt = new Date()
-            item.createdAt = createdAt.toISOString()
             item.weekStartDate = getMondayOfWeek(createdAt)
             
             item.ip = (event.requestContext && event.requestContext.http)
@@ -137,7 +131,7 @@ exports.handler = async (event, context) => {
             try {
                 await client.connect();
 
-                const values = dbColumns.slice(1).map(v => {
+                const values = dbColumns.map(v => {
                     const value = getProperty(item, v)
                     if (value !== undefined) {
                         return value

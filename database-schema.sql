@@ -1,7 +1,7 @@
 --- This is the schema used to create the pings table
 
 CREATE TABLE "pings" (
-   "createdAt" TIMESTAMP not null,
+   "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    "weekYear" varchar(12),
    "weekStartDate" TIMESTAMP,
    "instanceId" varchar(256),
