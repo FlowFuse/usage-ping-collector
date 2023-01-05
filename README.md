@@ -4,7 +4,7 @@ This repo contains the code for the FlowForge Telemetry Ping App. This
 is a very simple HTTPS end point that is used to collect usage information
 from instances of FlowForge that have opted-in to sharing the information.
 
-The received data is stored in a DynamoDB table.
+The received data is stored in an RDS (Postgres) table.
 
 This service does not store any identifying information that can be used
 to identify individual users. The data is augmented with a hash of the sending
@@ -28,43 +28,35 @@ that contains a property called `nodejs`.
 
 The collector will *only* store properties in that list to the database. That
 means if new properties are added to the FlowForge code that sends the pings,
-they must also be added to the collector for them to be handled.
+they must also be added to the collector for them to be handled. This includes
+updating the database table structure to accept the new values.
 
 This may prove to be overly restrictive - but as we don't anticipate a high
 level of churn in the metrics we gather, it should be manageable. This approach
 also ensures proper consideration and discussion is applied to any metric added
 to the data gathering process.
 
-## Requirements
+
+## Updating the live collector code
+
+### Requirements
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
-* [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
-* Manually configured Custom Domain + Certificates
 
-### Deploy
+### Update script
 
-To deploy the template, run the following in the root director of the repo:
-
+```bash
+cd src
+npm install
+zip -r ../function.zip .
+cd ..
+aws lambda update-function-code --function-name telemetryPingToRDS --zip-file fileb://function.zip
 ```
-sam deploy
-```
 
-If deploying for the first time, you will then need to create an API Mapping for
-your custom domain via the [AWS Console](https://eu-west-1.console.aws.amazon.com/apigateway/main/publish/domain-names):
+If the update adds any additional properties, the database table structure must
+be updated to accepted the new values *before* the code is deployed.
 
-  - API Gateway -> Custom domain names -> API mappings
+This is currently done be running the appropriate `ALTER TABLE` commands on the
+database. The `database-schema.sql` file should also be updated as a record of
+the expected schema.
 
-
-
-### Danger Zone
-
-To delete the stack, **which includes the database table, so all data will be lost**:
-
-1. Remove the API Mapping via the AWS Console
-2. `aws cloudformation delete-stack --stack-name ff-ping-app`
-
-You can use the following to montior the delete progress
-
-```
-aws cloudformation list-stacks --query "StackSummaries[?contains(StackName,'ff-ping-app')].StackStatus"
-```
