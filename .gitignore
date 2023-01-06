@@ -1,2 +1,4 @@
+node_modules
+package-lock.json
 src/node_modules
 function.zip
