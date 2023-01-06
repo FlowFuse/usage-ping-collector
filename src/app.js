@@ -38,7 +38,7 @@ const dbColumns = [
 
 const columnList = `"${dbColumns.join('","')}"`
 const columnValues = dbColumns.map((v,index) => {
-	return '$'+index
+	return '$'+(index+1)
 }).join(",")
 
 function getProperty(payload, key) {
