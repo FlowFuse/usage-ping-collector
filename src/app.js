@@ -127,6 +127,7 @@ exports.handler = async (event, context) => {
 
             const dbConfig = {
                 host: process.env.PG_URL,
+                port: process.env.PG_PORT || '5432',
                 user: process.env.PG_USER,
                 password: process.env.PG_PW,
                 database: process.env.PG_DB,
