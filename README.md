@@ -60,3 +60,50 @@ This is currently done be running the appropriate `ALTER TABLE` commands on the
 database. The `database-schema.sql` file should also be updated as a record of
 the expected schema.
 
+## Testing the collector
+
+The tests in this repo can be used to verify the behaviour of the collector against
+a *local* Postgres database.
+
+### Running postgres locally
+
+The following will run postgress locally using Docker, with the default configuration
+used by the tests.
+
+You can use a different port/username/password/db, but will need to set some
+environment variables to tell the tests where to find postgres.
+
+```
+docker pull postgres
+docker run --name pingCollectorPostgres \
+    -p 5432:5432 \
+    -e POSTGRES_USER=postgres \
+    -e POSTGRES_PASSWORD=secret \
+    -e POSTGRES_DB=pings_test \
+    -d \
+    postgres
+```
+
+To later stop the container
+
+```
+docker stop pingCollectorPostgres
+```
+
+### Running the tests
+
+The tests expect the database to be running on `localhost:5432` with a username/password
+of `postgres`/`secret` and to use a database called `pings_test`.
+
+The following env vars can be set to change any of those properties:
+
+ - `PG_URL`
+ - `PG_DB`
+ - `PG_USER`
+ - `PG_PW`
+
+Finally, to run the tests:
+
+```
+npm run test
+```

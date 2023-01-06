@@ -1,0 +1,23 @@
+{
+  "name": "usage-ping-collector",
+  "version": "1.0.0",
+  "description": "This repo contains the code for the FlowForge Telemetry Ping App. This is a very simple HTTPS end point that is used to collect usage information from instances of FlowForge that have opted-in to sharing the information.",
+  "private": true,
+  "scripts": {
+    "test": "mocha test/**/*_spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flowforge/usage-ping-collector.git"
+  },
+  "keywords": [],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/flowforge/usage-ping-collector/issues"
+  },
+  "homepage": "https://github.com/flowforge/usage-ping-collector#readme",
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "pg": "^8.8.0"
+  }
+}
