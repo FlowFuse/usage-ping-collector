@@ -31,8 +31,6 @@ const optionalProperties = [
 
 const dbColumns = [
     'ip',
-    'weekYear',
-    'weekStartDate',
     'isDev',
     ...requiredProperties,
     ...optionalProperties
@@ -75,16 +73,6 @@ function setProperty(object, key, value) {
     })
 }
 
-function padNum(v) {
-    return ((v < 10)?'0':'')+v
-}
-
-function getMondayOfWeek(date) {
-    const deltaDays = (date.getDay()+6)%7
-    const monday = new Date(date.getTime() - (deltaDays*1000*60*60*24))
-    return `${monday.getFullYear()}-${padNum(monday.getMonth()+1)}-${padNum(monday.getDate())}`
-}
-
 exports.handler = async (event, context) => {
     const response = {
         'statusCode': 200
@@ -102,9 +90,7 @@ exports.handler = async (event, context) => {
                     throw new Error(`Missing required property: ${key}`)
                 }
             })
-            const createdAt = new Date()
-            item.weekStartDate = getMondayOfWeek(createdAt)
-            
+
             item.ip = (event.requestContext && event.requestContext.http)
                 ? sha256(event.requestContext.http.sourceIp)
                 : 'unknown'

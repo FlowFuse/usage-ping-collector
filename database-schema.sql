@@ -2,8 +2,6 @@
 
 CREATE TABLE "pings" (
    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   "weekYear" varchar(12),
-   "weekStartDate" TIMESTAMP,
    "instanceId" varchar(256),
    "ip" varchar(256),
    "isDev" BOOLEAN,
