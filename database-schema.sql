@@ -20,5 +20,6 @@ CREATE TABLE "pings" (
    "platform.counts.projectTemplates" INTEGER,
    "platform.config.broker.enabled" BOOLEAN,
    "platform.config.email.enabled" BOOLEAN,
-   "platform.config.fileStore.enabled" BOOLEAN
+   "platform.config.fileStore.enabled" BOOLEAN,
+   PRIMARY KEY ("created_at", "instanceId")
 )
