@@ -4,7 +4,6 @@ CREATE TABLE "pings" (
    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    "instanceId" varchar(256),
    "ip" varchar(256),
-   "isDev" BOOLEAN,
    "env.flowforge" varchar(64),
    "env.nodejs" varchar(64),
    "os.arch" varchar(32),

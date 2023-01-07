@@ -31,7 +31,6 @@ const optionalProperties = [
 
 const dbColumns = [
     'ip',
-    'isDev',
     ...requiredProperties,
     ...optionalProperties
 ]
@@ -99,9 +98,6 @@ exports.handler = async (event, context) => {
                 const value = getProperty(payload, key)
                 if (value !== undefined) {
                     setProperty(item, key, value)
-                    if (key === 'env.flowforge') {
-                        item.isDev = !!/git/.test(value)
-                    }
                 }
             })
 
