@@ -1,6 +1,8 @@
-const { readFile } = require('node:fs/promises')
+const { readFile, readdir } = require('node:fs/promises')
+
 const path = require('node:path')
 const { Client } = require('pg')
+const MIGRATIONS_DIR = path.resolve(path.join(__dirname, '..', '..', 'migrations'))
 
 process.env.PG_DB = process.env.PG_DB || 'pings_test'
 process.env.PG_URL = process.env.PG_URL || 'localhost'
@@ -53,10 +55,16 @@ async function query(queryFunction) {
 
 
 async function createTable () {
-    await query(async (client) => {
-        const schema = await readFile(path.join(__dirname, '..', '..', 'database-schema.sql'), 'utf-8')
-        await client.query(schema)
-    })
+    let migrationFiles = await readdir(MIGRATIONS_DIR)
+    migrationFiles = migrationFiles.filter(name => /^\d\d\d\d\d\d\d\d-.+\.sql$/.test(name))
+    migrationFiles.sort()
+    
+    for (const filename of migrationFiles) {
+        await query(async (client) => {
+            const schema = await readFile(path.join(MIGRATIONS_DIR, filename), 'utf-8')
+            await client.query(schema)
+        })
+    }
 }
 
 async function getPings () {
