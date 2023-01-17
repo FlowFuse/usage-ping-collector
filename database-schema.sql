@@ -20,5 +20,7 @@ CREATE TABLE "pings" (
    "platform.config.broker.enabled" BOOLEAN,
    "platform.config.email.enabled" BOOLEAN,
    "platform.config.fileStore.enabled" BOOLEAN,
+   "platform.counts.libraryEntries" INTEGER,
+   "platform.counts.sharedLibraryEntries" INTEGER,
    PRIMARY KEY ("created_at", "instanceId")
 )
