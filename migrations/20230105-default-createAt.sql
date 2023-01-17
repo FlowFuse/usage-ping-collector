@@ -1,0 +1,2 @@
+ALTER TABLE "pings" RENAME COLUMN "createdAt" TO "created_at";
+ALTER TABLE "pings" ALTER COLUMN "created_at" SET DEFAULT CURRENT_TIMESTAMP;

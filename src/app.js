@@ -30,22 +30,14 @@ const optionalProperties = [
 ]
 
 const dbColumns = [
-    'createdAt',
     'ip',
-    'weekYear',
-    'weekStartDate',
-    'isDev',
     ...requiredProperties,
     ...optionalProperties
 ]
 
 const columnList = `"${dbColumns.join('","')}"`
 const columnValues = dbColumns.map((v,index) => {
-    if (index === 0) {
-        return 'current_timestamp'
-    } else {
-        return '$'+index
-    }
+	return '$'+(index+1)
 }).join(",")
 
 function getProperty(payload, key) {
@@ -80,16 +72,6 @@ function setProperty(object, key, value) {
     })
 }
 
-function padNum(v) {
-    return ((v < 10)?'0':'')+v
-}
-
-function getMondayOfWeek(date) {
-    const deltaDays = (date.getDay()+6)%7
-    const monday = new Date(date.getTime() - (deltaDays*1000*60*60*24))
-    return `${monday.getFullYear()}-${padNum(monday.getMonth()+1)}-${padNum(monday.getDate())}`
-}
-
 exports.handler = async (event, context) => {
     const response = {
         'statusCode': 200
@@ -107,10 +89,7 @@ exports.handler = async (event, context) => {
                     throw new Error(`Missing required property: ${key}`)
                 }
             })
-            const createdAt = new Date()
-            item.createdAt = createdAt.toISOString()
-            item.weekStartDate = getMondayOfWeek(createdAt)
-            
+
             item.ip = (event.requestContext && event.requestContext.http)
                 ? sha256(event.requestContext.http.sourceIp)
                 : 'unknown'
@@ -119,9 +98,6 @@ exports.handler = async (event, context) => {
                 const value = getProperty(payload, key)
                 if (value !== undefined) {
                     setProperty(item, key, value)
-                    if (key === 'env.flowforge') {
-                        item.isDev = !!/git/.test(value)
-                    }
                 }
             })
 
@@ -138,7 +114,7 @@ exports.handler = async (event, context) => {
             try {
                 await client.connect();
 
-                const values = dbColumns.slice(1).map(v => {
+                const values = dbColumns.map(v => {
                     const value = getProperty(item, v)
                     if (value !== undefined) {
                         return value

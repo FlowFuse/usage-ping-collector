@@ -50,7 +50,10 @@ describe('Ping Collector', async function () {
 
     it('writes ping to table', async function () {
         const result = await sendPing({
-            instanceId: 'test-instance'
+            instanceId: 'test-instance',
+            os: {
+                type: 'linux'
+            }
         })
         assert.equal(result.statusCode, 200)
         assert.deepEqual(result.body, {"status": "success"})
@@ -58,10 +61,11 @@ describe('Ping Collector', async function () {
         assert.equal(pings.length, 1)
         const ping = pings[0]
         assert.equal(ping.instanceId, 'test-instance')
+        assert.equal(ping['os.type'], 'linux')
         assert.ok(ping.ip)
         assert.notEqual(ping.ip, '192.168.0.1')
         // Check createdAt is within last 500ms
-        assert.ok(Date.now() - ping.createdAt.getTime() < 500)
+        assert.ok(Date.now() - ping.created_at.getTime() < 500)
 
     })
 
