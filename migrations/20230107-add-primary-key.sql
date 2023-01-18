@@ -1,1 +1,1 @@
-ALTER TABLE "pings" ADD PRIMAY KEY ("created_at", "instanceId");
+ALTER TABLE "pings" ADD PRIMARY KEY ("created_at", "instanceId");

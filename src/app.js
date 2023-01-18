@@ -26,7 +26,9 @@ const optionalProperties = [
     'platform.config.driver',
     'platform.config.broker.enabled',
     'platform.config.fileStore.enabled',
-    'platform.config.email.enabled'
+    'platform.config.email.enabled',
+    'platform.counts.libraryEntries',
+    'platform.counts.sharedLibraryEntries'
 ]
 
 const dbColumns = [

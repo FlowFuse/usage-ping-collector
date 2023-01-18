@@ -1,9 +1,11 @@
---- This is the schema used to create the pings table
-
+--- This creates the pings table
 CREATE TABLE "pings" (
-   "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   "createdAt" TIMESTAMP not null,
+   "weekYear" varchar(12),
+   "weekStartDate" TIMESTAMP,
    "instanceId" varchar(256),
    "ip" varchar(256),
+   "isDev" BOOLEAN,
    "env.flowforge" varchar(64),
    "env.nodejs" varchar(64),
    "os.arch" varchar(32),
@@ -19,8 +21,5 @@ CREATE TABLE "pings" (
    "platform.counts.projectTemplates" INTEGER,
    "platform.config.broker.enabled" BOOLEAN,
    "platform.config.email.enabled" BOOLEAN,
-   "platform.config.fileStore.enabled" BOOLEAN,
-   "platform.counts.libraryEntries" INTEGER,
-   "platform.counts.sharedLibraryEntries" INTEGER,
-   PRIMARY KEY ("created_at", "instanceId")
+   "platform.config.fileStore.enabled" BOOLEAN
 )
