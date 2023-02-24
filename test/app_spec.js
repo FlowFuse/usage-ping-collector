@@ -68,5 +68,27 @@ describe('Ping Collector', async function () {
         assert.ok(Date.now() - ping.created_at.getTime() < 500)
 
     })
+    it('writes license info to table', async function () {
+        const result = await sendPing({
+            instanceId: 'test-instance',
+            platform: {
+                license: {
+                    id: 'abcdef01-2222-3333-4444-555555555555',
+                    type: 'TRIAL',
+                }
+            }
+        })
+        assert.equal(result.statusCode, 200)
+        assert.deepEqual(result.body, {"status": "success"})
+        const pings = await db.getPings()
+        assert.equal(pings.length, 1)
+        const ping = pings[0]
+        assert.equal(ping.instanceId, 'test-instance')
+        assert.equal(ping['platform.license.id'], 'abcdef01-2222-3333-4444-555555555555')
+        assert.equal(ping['platform.license.type'], 'TRIAL')
+        // Check createdAt is within last 500ms
+        assert.ok(Date.now() - ping.created_at.getTime() < 500)
+
+    })
 
 })

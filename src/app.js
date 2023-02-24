@@ -28,7 +28,9 @@ const optionalProperties = [
     'platform.config.fileStore.enabled',
     'platform.config.email.enabled',
     'platform.counts.libraryEntries',
-    'platform.counts.sharedLibraryEntries'
+    'platform.counts.sharedLibraryEntries',
+    'platform.license.id',
+    'platform.license.type'
 ]
 
 const dbColumns = [
