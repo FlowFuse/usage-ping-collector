@@ -22,5 +22,7 @@ CREATE TABLE "pings" (
    "platform.config.fileStore.enabled" BOOLEAN,
    "platform.counts.libraryEntries" INTEGER,
    "platform.counts.sharedLibraryEntries" INTEGER,
+   "platform.license.id" varchar(256),
+   "platform.license.type" varchar(16),
    PRIMARY KEY ("created_at", "instanceId")
 )
