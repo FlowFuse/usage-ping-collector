@@ -24,5 +24,6 @@ CREATE TABLE "pings" (
    "platform.counts.sharedLibraryEntries" INTEGER,
    "platform.license.id" varchar(256),
    "platform.license.type" varchar(16),
+   "platform.counts.projects.suspended" INTEGER DEFAULT 0,
    PRIMARY KEY ("created_at", "instanceId")
 )

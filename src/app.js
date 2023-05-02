@@ -19,6 +19,7 @@ const optionalProperties = [
     'platform.counts.users',
     'platform.counts.teams',
     'platform.counts.projects',
+    'platform.counts.projects.suspended',
     'platform.counts.devices',
     'platform.counts.projectSnapshots',
     'platform.counts.projectTemplates',
