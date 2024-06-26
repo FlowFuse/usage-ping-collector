@@ -63,7 +63,7 @@ describe('Ping Collector', async function () {
         assert.equal(ping.instanceId, 'test-instance')
         assert.equal(ping['os.type'], 'linux')
         assert.ok(ping.ip)
-        assert.notEqual(ping.ip, '192.168.0.1')
+        assert.equal(ping.ip, '192.168.0.1')
         // Check createdAt is within last 500ms
         assert.ok(Date.now() - ping.created_at.getTime() < 500)
 
