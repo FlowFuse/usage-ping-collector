@@ -1,7 +1,4 @@
 const { Client } = require("pg");
-const crypto = require('crypto')
-const sha256 = value => crypto.createHash('sha256').update(value).digest().toString('base64')
-
 
 // NOTE: any changes to required/optional props will require the database table
 // to be updated first. DO NOT DEPLOY changes to these lists without having
@@ -96,7 +93,7 @@ exports.handler = async (event, context) => {
             })
 
             item.ip = (event.requestContext && event.requestContext.http)
-                ? sha256(event.requestContext.http.sourceIp)
+                ? event.requestContext.http.sourceIp
                 : 'unknown'
 
             optionalProperties.forEach(key => {
