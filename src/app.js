@@ -21,6 +21,7 @@ const optionalProperties = [
     'platform.counts.projectSnapshots',
     'platform.counts.projectTemplates',
     'platform.counts.projectStacks',
+    'platform.counts.blueprints',
     'platform.config.driver',
     'platform.config.broker.enabled',
     'platform.config.fileStore.enabled',
