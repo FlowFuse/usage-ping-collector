@@ -28,6 +28,7 @@ const optionalProperties = [
     'platform.config.email.enabled',
     'platform.counts.libraryEntries',
     'platform.counts.sharedLibraryEntries',
+    'platform.counts.teamBrokerClients',
     'platform.license.id',
     'platform.license.type'
 ]
