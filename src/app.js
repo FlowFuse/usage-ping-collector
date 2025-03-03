@@ -18,6 +18,8 @@ const optionalProperties = [
     'platform.counts.projects',
     'platform.counts.projectsByState.suspended',
     'platform.counts.devices',
+    'platform.counts.devicesByLastSeen.never',
+    'platform.counts.devicesByLastSeen.day',
     'platform.counts.projectSnapshots',
     'platform.counts.projectTemplates',
     'platform.counts.projectStacks',
@@ -29,6 +31,7 @@ const optionalProperties = [
     'platform.counts.libraryEntries',
     'platform.counts.sharedLibraryEntries',
     'platform.counts.teamBrokerClients',
+    'platform.counts.remoteBrokers',
     'platform.license.id',
     'platform.license.type'
 ]
