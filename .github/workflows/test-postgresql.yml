@@ -23,15 +23,12 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
-    strategy:
-      matrix:
-        node-version: [16.x, 24]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Setup NodeJS ${{ matrix.node-version }}
+      - name: Setup NodeJS 24
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
       - name: Install Dependencies
         run: npm install
       - name: Run tests
