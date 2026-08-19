@@ -1,4 +1,13 @@
 const { Client } = require("pg");
+const { readFileSync } = require("node:fs");
+const path = require("node:path");
+
+const sslConfig = process.env.PGSSLMODE === 'disable'
+    ? false
+    : {
+        ca: readFileSync(path.join(__dirname, 'rds-ca-bundle.pem')),
+        rejectUnauthorized: true
+    }
 
 // NOTE: any changes to required/optional props will require the database table
 // to be updated first. DO NOT DEPLOY changes to these lists without having
@@ -114,6 +123,7 @@ exports.handler = async (event, context) => {
                 user: process.env.PG_USER,
                 password: process.env.PG_PW,
                 database: process.env.PG_DB,
+                ssl: sslConfig,
             }
 
             const client = new Client(dbConfig);
