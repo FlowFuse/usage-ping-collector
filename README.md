@@ -37,6 +37,48 @@ also ensures proper consideration and discussion is applied to any metric added
 to the data gathering process.
 
 
+## Database connection security
+
+The collector connects to a database over TLS and verifies the server certificate
+against Amazon's RDS root CA chain, including a hostname check.
+
+The CA chain is **not** in Node's default trust store, so it is vendored into
+this repo as `src/rds-ca-bundle.pem` - AWS's
+[global-bundle.pem](https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem),
+which covers every commercial AWS Region. It lives in `src/` so the existing 
+deploy step picks it up with no extra steps.
+
+If the bundle is missing or corrupt the function fails to start rather than
+falling back to an unverified connection. There is deliberately no code path
+that silently downgrades to plaintext.
+
+Two requirements follow from the hostname check:
+
+ - `PG_URL` must be the **real RDS instance endpoint**. The server certificate's
+   Common Name is that endpoint, so a CNAME or vanity DNS name will fail to
+   connect. If `PG_URL` is a bare IP address, the chain is still verified but the
+   hostname cannot be, which is weaker - use the endpoint.
+ - The instance's CA must be one of `rds-ca-rsa2048-g1`, `rds-ca-rsa4096-g1` or
+   `rds-ca-ecc384-g1` (all three are in the bundle). Check with:
+
+```bash
+aws rds describe-db-instances \
+    --query 'DBInstances[].[DBInstanceIdentifier,CACertificateIdentifier,Endpoint.Address]'
+```
+
+### Refreshing the CA bundle
+
+AWS occasionally adds new root CAs. To refresh:
+
+```bash
+curl -o src/rds-ca-bundle.pem \
+    https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+npm run test
+```
+
+Only root CAs belong in this file. Do not add intermediate CAs as it breaks
+RDS automatic server-certificate rotation.
+
 ## Updating the live collector code
 
 ### Requirements
@@ -98,9 +140,14 @@ of `postgres`/`secret` and to use a database called `pings_test`.
 The following env vars can be set to change any of those properties:
 
  - `PG_URL`
+ - `PG_PORT`
  - `PG_DB`
  - `PG_USER`
  - `PG_PW`
+
+The local Postgres above serves no TLS, so the tests set `PGSSLMODE=disable` to
+opt out of certificate verification (see `test/lib/db.js`). That is a
+test-only escape hatch - never set it on the deployed function.
 
 Finally, to run the tests:
 

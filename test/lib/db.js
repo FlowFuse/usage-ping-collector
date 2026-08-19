@@ -9,6 +9,7 @@ process.env.PG_URL = process.env.PG_URL || 'localhost'
 process.env.PG_PORT = process.env.PG_PORT || '5432'
 process.env.PG_USER = process.env.PG_USER || 'postgres'
 process.env.PG_PW = process.env.PG_PW || 'secret'
+process.env.PGSSLMODE = process.env.PGSSLMODE || 'disable'
 
 const PG_OPTS = {
     host: process.env.PG_URL,
